@@ -30,8 +30,13 @@ var getUniqueProductTypeListFrom = function (body) {
 };
 
 var getBrandNameFrom = function (body) {
-  var products = JSON.parse(body);
-  return products[0].brand;
+  try {
+    var products = JSON.parse(body);
+    return products[0].brand;
+  }
+  catch(e){
+    throw new Error("No data found");   
+  }
 };
 
 var writeUniqueProductTypeListToFile = function (brand, uniqueProductTypeList) {
@@ -68,5 +73,6 @@ module.exports = {
   fetchBrandNamesFrom,
   makeUrlFrom,
   callMakeUpApi,
-  sum
+  sum,
+  getBrandNameFrom
 };
