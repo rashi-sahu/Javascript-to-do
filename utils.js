@@ -60,8 +60,13 @@ var callMakeUpApi = function (urlArray) {
   }
 };
 
+var sum = function (a, b) {
+  return a + b;
+}
+
 module.exports = {
   fetchBrandNamesFrom,
   makeUrlFrom,
   callMakeUpApi,
+  sum
 };
