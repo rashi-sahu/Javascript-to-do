@@ -2,35 +2,64 @@ const request = require("request");
 const R = require("ramda");
 var fs = require("fs");
 
-var url_array = [];
-fs.readFile("brand_name.txt", function cb1(err, data) {
-  var brand_name = data
-    .toString()
-    .split("\n")
-    .map((x) => x.replace("\r", ""));
+var fetchBrandNamesFrom = function(fileData) {
+    return fileData
+      .toString()
+      .split("\n")
+      .map((x) => x.replace("\r", ""));
+}
 
-  for (var i = 0; i < brand_name.length; i++) {
-    var url = `http://makeup-api.herokuapp.com/api/v1/products.json?brand=${brand_name[i]}`;
-    url_array.push(url);
-  }
+var makeUrlFrom = function(brandName) {
+    var urlArray = [];
+    for (var i = 0; i < brandName.length; i++) {
+        var url = `http://makeup-api.herokuapp.com/api/v1/products.json?brand=${brandName[i]}`;
+        urlArray.push(url);
+    }
+    return urlArray;
+}
 
-  for (var i = 0; i < url_array.length; i++) {
-    request(url_array[i], function cb2(error, response, body) {
-      var products = JSON.parse(body);
-      var product_type_list = [];
-      var brand = products[0].brand;
-      products.forEach((element) => {
-        product_type_list.push(element.product_type);
-      });
-      var unique_product_type_list = R.uniq(product_type_list);
 
-      fs.appendFile(
-        "unique_product.txt",
-        brand + " - " + unique_product_type_list + "\n",
-        function (err) {
-          console.log(brand_name);
-        }
-      );
+var getUniqueProductTypeListFrom = function(body) {
+    var products = JSON.parse(body);
+    var productTypeList = [];
+    products.forEach((element) => {
+      productTypeList.push(element.product_type);
     });
-  }
-});
+    return R.uniq(productTypeList);
+}
+
+var getBrandNameFrom = function(body) {
+    var products = JSON.parse(body);
+    return products[0].brand;
+}
+
+var writeUniqueProductTypeListToFile = function(brand, uniqueProductTypeList) {
+    fs.appendFile(
+        "unique_product.txt",
+        brand + " - " + uniqueProductTypeList + "\n",
+        function (err) {
+            if(err) {console.log("Error Occurs !!!", err )}
+            else {console.log("Done !!!")}
+        }
+    );
+}
+
+var cb2 = function(error, response, body) {
+    var uniqueProductTypeList = getUniqueProductTypeListFrom(body);
+    var brand = getBrandNameFrom(body);
+    writeUniqueProductTypeListToFile(brand, uniqueProductTypeList); 
+}
+
+var callMakeUpApi = function(urlArray) {
+    for (var i = 0; i < urlArray.length; i++) {
+        request(urlArray[i], cb2);
+    }
+}
+
+var cb1 = function(err, data) {
+    var brandName = fetchBrandNamesFrom(data);
+    var urlArray = makeUrlFrom(brandName);
+    callMakeUpApi(urlArray);
+}
+
+fs.readFile("brand_name.txt", cb1);
