@@ -1,8 +1,36 @@
+const request = require("request");
+const R = require("ramda");
+var fs = require("fs");
 
-const request = require('request');
-var url = "http://makeup-api.herokuapp.com/api/v1/products.json?brand=covergirl&product_type=lipstick.google.com";
-request(url, function (error, response, body) {
-  console.error('error:', error); // Print the error if one occurred
-  //console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-  console.log('body:', JSON.parse(body)[0].id); // Print the HTML for the Google homepage.
+var url_array = [];
+fs.readFile("brand_name.txt", function cb1(err, data) {
+  var brand_name = data
+    .toString()
+    .split("\n")
+    .map((x) => x.replace("\r", ""));
+
+  for (var i = 0; i < brand_name.length; i++) {
+    var url = `http://makeup-api.herokuapp.com/api/v1/products.json?brand=${brand_name[i]}`;
+    url_array.push(url);
+  }
+
+  for (var i = 0; i < url_array.length; i++) {
+    request(url_array[i], function cb2(error, response, body) {
+      var products = JSON.parse(body);
+      var product_type_list = [];
+      var brand = products[0].brand;
+      products.forEach((element) => {
+        product_type_list.push(element.product_type);
+      });
+      var unique_product_type_list = R.uniq(product_type_list);
+
+      fs.appendFile(
+        "unique_product.txt",
+        brand + " - " + unique_product_type_list + "\n",
+        function (err) {
+          console.log(brand_name);
+        }
+      );
+    });
+  }
 });

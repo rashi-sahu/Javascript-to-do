@@ -1,0 +1,3 @@
+dalish - lipstick
+piggy paint - nail_polish
+covergirl - bronzer,blush,lip_liner,foundation,eyeshadow,eyeliner,nail_polish,lipstick,mascara
