@@ -10,3 +10,10 @@ var cb1 = function (err, fileData) {
 };
 
 fs.readFile(inputFileName, cb1);
+
+
+
+
+module.exports = {
+  cb1
+};

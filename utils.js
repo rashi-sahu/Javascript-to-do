@@ -5,10 +5,12 @@ var fs = require("fs");
 var ouputFileName = "unique_product.txt";
 
 var fetchBrandNamesFrom = function (fileData) {
-  return fileData
+  const isEmpty = str => str.length !== 0;
+  var temp = fileData
     .toString()
     .split("\n")
     .map((x) => x.replace("\r", ""));
+  return R.filter(isEmpty, temp);
 };
 
 var makeUrlFrom = function (brandName) {
@@ -24,7 +26,9 @@ var getUniqueProductTypeListFrom = function (body) {
   var products = JSON.parse(body);
   var productTypeList = [];
   products.forEach((element) => {
-    productTypeList.push(element.product_type);
+    if(element.product_type){
+      productTypeList.push(element.product_type);
+    }
   });
   return R.uniq(productTypeList);
 };
@@ -46,9 +50,7 @@ var writeUniqueProductTypeListToFile = function (brand, uniqueProductTypeList) {
     function (err) {
       if (err) {
         console.log("Error Occurs !!!", err);
-      } else {
-        console.log("Done !!!");
-      }
+      } 
     }
   );
 };
@@ -74,5 +76,8 @@ module.exports = {
   makeUrlFrom,
   callMakeUpApi,
   sum,
-  getBrandNameFrom
+  getBrandNameFrom,
+  getUniqueProductTypeListFrom,
+  writeUniqueProductTypeListToFile,
+  cb2
 };

@@ -5,14 +5,15 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test" : "jest --coverage"
+    "test": "jest --coverage"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "fs": "0.0.1-security",
     "ramda": "^0.27.0",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "sinon": "^9.0.2"
   },
   "devDependencies": {
     "jest": "^26.1.0"
